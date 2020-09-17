@@ -160,7 +160,7 @@ display this help
                   body: `\
 Failed!
 \`\`\`
-${(e && e.stack) || e}
+${(e && e.priv) || ''}${(e && e.stack) || e}
 \`\`\``,
                 },
                 { replyTo: question.id },
