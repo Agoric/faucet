@@ -77,7 +77,7 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
         cp.stderr.on('data', chunk => (buf += chunk.toString()));
         cp.on('exit', code => {
           if (code) {
-            reject(code);
+            reject(Error(`Nonzero ${command.join(' ')} exit code: ${code}`));
           } else {
             resolve({ priv: buf, message: '' });
           }
