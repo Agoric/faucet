@@ -1,11 +1,12 @@
 import KeybaseBot from 'keybase-bot';
 
-const TRIGGER_COMMAND = '!faucet2';
+const TRIGGER_COMMAND = '!faucet';
 
 const ADMIN_CHANNEL = {
   name: 'agoric.testnet.admins',
-  public: false,
+  membersType: 'team',
   topicType: 'chat',
+  topicName: 'general',
 };
 
 export const runKeybaseBot = async ({ enact, validate, storage, commit }) => {
@@ -53,8 +54,8 @@ display this help
     );
 
     const body = `\
-@here @${requestMsg.sender.username} wants to \`${args.join(' ')}\`.
-React with :+1: or :-1:`;
+@here @${requestMsg.sender.username} wants to \`${args.join(' ')}\`.`;
+    // React with :+1: or :-1:`;
     const question = await bot.chat.send(ADMIN_CHANNEL, { body });
     // console.log('sent out', approval);
 
@@ -71,7 +72,7 @@ React with :+1: or :-1:`;
   };
 
   const onMessage = async msg => {
-    // console.log('have message', msg);
+    console.log('have message', msg);
     switch (msg.content.type) {
       case 'reaction': {
         // console.log('handling reaction', msg);

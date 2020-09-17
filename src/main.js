@@ -61,8 +61,11 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
           address,
         ];
         console.log('spawn', command, request);
+        let buf = '';
         const cp = spawn(command[0], command.slice(1));
-        cp.on('exit', resolve);
+        cp.stdout.on('data', chunk => (buf += chunk.toString()));
+        cp.stderr.on('data', chunk => (buf += chunk.toString()));
+        cp.on('exit', _ => resolve(buf));
         cp.on('error', reject);
         break;
       }
