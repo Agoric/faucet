@@ -72,7 +72,7 @@ display this help
   };
 
   const onMessage = async msg => {
-    console.log('have message', msg);
+    // console.log('have message', msg);
     switch (msg.content.type) {
       case 'reaction': {
         // console.log('handling reaction', msg);
@@ -127,26 +127,28 @@ display this help
         );
         await enact(request, TRIGGER_COMMAND)
           .then(
-            async body => {
+            async ({ message, priv }) => {
               await bot.chat.react(
                 requestMsg.conversationId,
                 requestMsg.id,
                 ':white_check_mark:',
               );
-              if (!body) {
-                return;
-              }
               await bot.chat.send(
                 question.conversationId,
                 {
-                  body,
+                  body: message
+                    ? `${message}\n\`\`\`\n${priv}\`\`\``
+                    : `\`\`\`\n${priv}\`\`\``,
                 },
                 { replyTo: question.id },
               );
+              if (!message) {
+                return;
+              }
               await bot.chat.send(
                 requestMsg.conversationId,
                 {
-                  body,
+                  body: message,
                 },
                 { replyTo: requestMsg.id },
               );

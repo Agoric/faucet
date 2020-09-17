@@ -28,11 +28,21 @@ const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
       break;
     }
     case 'help': {
-      return `\
+      let help = `\
+\`\`\`
+${TRIGGER_COMMAND} add-egress <AGORIC-BECH32>
+\`\`\`
+add an Agoric Wallet to the network (something like \`agoric1wa9di7...\`)
+`;
+      if (canProvision) {
+        help += `\
 \`\`\`
 ${TRIGGER_COMMAND} provision <AGORIC-BECH32>
 \`\`\`
-give delegation tokens to the specified address (something like \`agoric1wa9di7...\`)`;
+give delegation tokens to the specified address (something like \`agoric1wa9di7...\`)
+`;
+      }
+      return help;
     }
     case undefined: {
       throw Error(`\`${TRIGGER_COMMAND}\` needs an command`);
@@ -65,7 +75,7 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
         const cp = spawn(command[0], command.slice(1));
         cp.stdout.on('data', chunk => (buf += chunk.toString()));
         cp.stderr.on('data', chunk => (buf += chunk.toString()));
-        cp.on('exit', _ => resolve(buf));
+        cp.on('exit', _ => resolve({ priv: buf, message: '' }));
         cp.on('error', reject);
         break;
       }
