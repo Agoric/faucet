@@ -30,6 +30,13 @@
   resolved "https://registry.yarnpkg.com/@agoric/make-hardener/-/make-hardener-0.1.1.tgz#9b887da47aeec6637d9db4f0a92a4e740b8262bb"
   integrity sha512-3emNc+yWJoFK5JMLoEFPs6rCzkntWQKxpR4gt3jaZYLKoUG4LrTmID3XNe8y40B6SJ3k/wLPodKa0ToQGlhrwQ==
 
+"@agoric/swing-store-simple@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@agoric/swing-store-simple/-/swing-store-simple-0.2.5.tgz#2de3ea79b8b88495122e6bb47d6f39a1d347c204"
+  integrity sha512-jGouD3OEwGbn2eq790wdBq62tgIlSZoeIyg4tY54SNITZn8QA6ZBmDKKztCs13GSfRCpskzGDdb37odp1nq+VA==
+  dependencies:
+    n-readlines "^1.0.0"
+
 "@agoric/transform-module@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@agoric/transform-module/-/transform-module-0.4.1.tgz#9fb152364faf372e1bda535cb4ef89717724f57c"
@@ -2277,6 +2284,11 @@ mute-stream@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
+
+n-readlines@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/n-readlines/-/n-readlines-1.0.0.tgz#c353797f216c253fdfef7e91da4e8b17c29a91a6"
+  integrity sha512-ISDqGcspVu6U3VKqtJZG1uR55SmNNF9uK0EMq1IvNVVZOui6MW6VR0+pIZhqz85ORAGp+4zW+5fJ/SE7bwEibA==
 
 natural-compare@^1.4.0:
   version "1.4.0"
