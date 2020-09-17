@@ -12,6 +12,7 @@ const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
   const [_trigger, cmd, address] = request.args;
   switch (cmd) {
     case 'add-egress':
+    case 'add-delegate':
     case 'provision': {
       if (!address) {
         throw Error(`you need to provide an \`agoric1...\` address`);
@@ -61,12 +62,13 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
     const [_trigger, cmd, address] = request.args;
     switch (cmd) {
       case 'add-egress':
+      case 'add-delegate':
       case 'provision': {
         const command = [
           AG_SETUP_COSMOS,
           'shell',
           `${NETWORK_NAME}/faucet-helper.sh`,
-          cmd,
+          cmd === 'provision' ? 'add-delegate' : cmd,
           request.sender.username,
           address,
         ];
