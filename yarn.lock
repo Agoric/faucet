@@ -12,17 +12,17 @@
   resolved "https://registry.yarnpkg.com/@agoric/babel-standalone/-/babel-standalone-7.9.5.tgz#1ca0c17844924199d31e49d6b67e8b2a629b8599"
   integrity sha512-1Aa23oPuRi4kywUyZODo8zey9Gq2NpD2xUnNvgJLoT8orMQRlVOtvbG3JeHq5sjJERlF/q6csg4/P8t8/5IABA==
 
-"@agoric/eventual-send@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@agoric/eventual-send/-/eventual-send-0.11.0.tgz#49a2a8ad62138cb0c9185e64ef258c339dce510d"
-  integrity sha512-tUc4zfJon5xVhbqhZSwugsQDCg9dHRmRTCNHdWtoGPyjOXfYUJ+I0v4VIYRbZc7lkoEURQViZK0HIoM59aJRcw==
+"@agoric/eventual-send@^0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@agoric/eventual-send/-/eventual-send-0.11.1.tgz#20d5a28f9ef3871caa1938f32322b5deba8166ea"
+  integrity sha512-zNDvjSzt+5o7uVuU3jpjzanpn4LelWwHJvDVp1ogi/jCWFABW2Q8N7Q2Y9mh8eAk7+oq6PzaW79J/ffYCF1wYg==
 
-"@agoric/install-ses@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@agoric/install-ses/-/install-ses-0.3.1.tgz#ede5eebc41dacab6ec7a4071dea26d8512f0a2b4"
-  integrity sha512-3iTxk35ijk0F7xPSOMbxHnEhz//ixZon0ZAab2wVTELJ2p1t6NioK5VE5ozmGeAs/jnpY9W8qNRk7ZphEyvgTg==
+"@agoric/install-ses@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@agoric/install-ses/-/install-ses-0.3.2.tgz#f22f5ae778fab27ec2e82cf0fef8827aad97ee4f"
+  integrity sha512-bFj50wj81kbZ2I/oimppi0bziRmr6vbIOKrV2wy54Gp6oK7dGPoRZSjHR/VUPdLE2nDP4TLMi6RXDPobffY0BQ==
   dependencies:
-    "@agoric/eventual-send" "^0.11.0"
+    "@agoric/eventual-send" "^0.11.1"
     ses "^0.10.1"
 
 "@agoric/make-hardener@^0.1.0":

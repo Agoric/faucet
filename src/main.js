@@ -1,7 +1,9 @@
+import '@agoric/install-ses';
 import { spawn } from 'child_process';
 
 import { openSwingStore } from '@agoric/swing-store-simple';
 import { runKeybaseBot } from './keybase';
+import { runDiscordBot } from './discord';
 
 const NETWORK_NAME = 'testnet';
 const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
@@ -11,6 +13,8 @@ const q = obj => JSON.stringify(obj, null, 2);
 const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
   const [_trigger, cmd, address] = request.args;
   switch (cmd) {
+    case 'client':
+    case 'delegate':
     case 'add-egress':
     case 'add-delegate':
     case 'provision': {
@@ -31,14 +35,14 @@ const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
     case 'help': {
       let help = `\
 \`\`\`
-${TRIGGER_COMMAND} add-egress <AGORIC-BECH32>
+${TRIGGER_COMMAND} client <AGORIC-BECH32>
 \`\`\`
 add an Agoric Wallet to the network (something like \`agoric1wa9di7...\`)
 `;
       if (canProvision) {
         help += `\
 \`\`\`
-${TRIGGER_COMMAND} provision <AGORIC-BECH32>
+${TRIGGER_COMMAND} delegate <AGORIC-BECH32>
 \`\`\`
 give delegation tokens to the specified address (something like \`agoric1wa9di7...\`)
 `;
@@ -61,6 +65,8 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
   return new Promise((resolve, reject) => {
     const [_trigger, cmd, address] = request.args;
     switch (cmd) {
+      case 'client':
+      case 'delegate':
       case 'add-egress':
       case 'add-delegate':
       case 'provision': {
@@ -68,7 +74,9 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
           AG_SETUP_COSMOS,
           'shell',
           `${NETWORK_NAME}/faucet-helper.sh`,
-          cmd === 'provision' ? 'add-delegate' : cmd,
+          ['delegate', 'provision', 'add-delegate'].includes(cmd)
+            ? 'add-delegate'
+            : 'add-egress',
           request.sender.username,
           address,
         ];
@@ -103,5 +111,8 @@ export default async _argv => {
   const validate = makeValidate(true);
   const enact = makeEnact(validate);
 
-  return Promise.all([runKeybaseBot({ enact, validate, storage, commit })]);
+  return Promise.all([
+    runKeybaseBot({ enact, validate, storage, commit }),
+    runDiscordBot({ enact, validate, storage, commit }),
+  ]);
 };
