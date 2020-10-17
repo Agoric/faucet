@@ -33,7 +33,7 @@ export const runDiscordBot = opts =>
         args,
         sender: { username: msg.author.username },
       };
-      const help = await validate(request).catch(async e => {
+      const help = await validate(request, TRIGGER_COMMAND).catch(async e => {
         await msg.reply(
           `\`${e}\`; try \`${TRIGGER_COMMAND} help\` for more information`,
         );
@@ -85,12 +85,13 @@ display this help
                 if (!message) {
                   return;
                 }
-                await msg.channel.send(`${bot.user} ${message}`);
+                await msg.channel.send(`${msg.author} ${message}`);
+                await msg.react(reaction.emoji);
               },
               async e => {
                 await msg.react('☠️');
-                await question.reply(`\
-Failed!
+                await question.channel.send(`\
+${msg.author} Failed!
 \`\`\`
 ${(e && e.priv) || ''}${(e && e.stack) || e}
 \`\`\``);
@@ -99,7 +100,7 @@ ${(e && e.priv) || ''}${(e && e.stack) || e}
             .finally(async () => {
               await hourglass
                 .remove()
-                .catch(e => console.error('Cannot remove hourglass'));
+                .catch(e => console.error('Cannot remove hourglass', e));
             });
         }
       });
