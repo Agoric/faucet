@@ -29,9 +29,10 @@ export const runDiscordBot = opts =>
      * @param {Array<string>} args
      */
     const handleFaucetCommand = async (msg, args) => {
+      const username = `${msg.author}`;
       const request = {
         args,
-        sender: { username: msg.author.username },
+        sender: { username },
       };
       const help = await validate(request, TRIGGER_COMMAND).catch(async e => {
         await msg.reply(
