@@ -44,10 +44,10 @@ export const runDiscordBot = opts =>
       }
       if (typeof help === 'string') {
         await msg.reply(`\
-${help}\`\`\`
+${help}Display this help:
+\`\`\`
 ${TRIGGER_COMMAND} help
 \`\`\`
-display this help
 `);
         return;
       }

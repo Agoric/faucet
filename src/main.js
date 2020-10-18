@@ -34,17 +34,17 @@ const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
     }
     case 'help': {
       let help = `\
+Add an Agoric Wallet to the network (something like \`agoric1wa9di7...\`):
 \`\`\`
 ${TRIGGER_COMMAND} client <AGORIC-BECH32>
 \`\`\`
-add an Agoric Wallet to the network (something like \`agoric1wa9di7...\`)
 `;
       if (canProvision) {
         help += `\
+Give \`uagstake\` tokens to the specified address (something like \`agoric1wa9di7...\`):
 \`\`\`
 ${TRIGGER_COMMAND} delegate <AGORIC-BECH32>
 \`\`\`
-give delegation tokens to the specified address (something like \`agoric1wa9di7...\`)
 `;
       }
       return help;
@@ -112,7 +112,7 @@ export default async _argv => {
   const enact = makeEnact(validate);
 
   return Promise.all([
-    runKeybaseBot({ enact, validate, storage, commit }),
+    // runKeybaseBot({ enact, validate, storage, commit }),
     runDiscordBot({ enact, validate, storage, commit }),
   ]);
 };
