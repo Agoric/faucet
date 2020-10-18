@@ -67,7 +67,10 @@ ${TRIGGER_COMMAND} help
       collector.on('collect', async (reaction, _user) => {
         if (reaction.emoji.name === '👎') {
           collector.stop();
-          msg.react(reaction.emoji);
+          await thinking
+            .remove()
+            .catch(e => console.error('Cannot remove thinking', e));
+          await msg.react(reaction.emoji);
         } else if (reaction.emoji.name === '👍') {
           collector.stop();
           const hourglass = await msg.react('⏳');
