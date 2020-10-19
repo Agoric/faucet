@@ -13,7 +13,7 @@ const q = obj => JSON.stringify(obj, null, 2);
 const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
   const [_trigger, cmd, address] = request.args;
   switch (cmd) {
-    case 'solo':
+    case 'client':
     case 'delegate':
     case 'add-egress':
     case 'add-delegate':
@@ -42,9 +42,9 @@ ${TRIGGER_COMMAND} delegate <AGORIC-BECH32>
 \`\`\`
 `;
         help += `\
-Add an \`ag-solo\` client to the network (do this only if prompted by your client):
+Add a client node to the network (do this only if prompted by your client):
 \`\`\`
-${TRIGGER_COMMAND} solo <AGORIC-BECH32>
+${TRIGGER_COMMAND} client <AGORIC-BECH32>
 \`\`\`
 `;
       }
@@ -66,7 +66,7 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
   return new Promise((resolve, reject) => {
     const [_trigger, cmd, address] = request.args;
     switch (cmd) {
-      case 'solo':
+      case 'client':
       case 'delegate':
       case 'add-egress':
       case 'add-delegate':
