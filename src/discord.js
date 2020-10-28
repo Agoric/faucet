@@ -49,6 +49,7 @@ ${help}Display this help:
 \`\`\`
 ${TRIGGER_COMMAND} help
 \`\`\`
+NOTE: 🤔 means that your request is still waiting manual approval.
 `);
         return;
       }
