@@ -2,16 +2,25 @@ import '@agoric/install-ses';
 import { spawn } from 'child_process';
 
 import { openSwingStore } from '@agoric/swing-store-simple';
-import { runKeybaseBot } from './keybase';
+// import { runKeybaseBot } from './keybase';
 import { runDiscordBot } from './discord';
 
-const NETWORK_NAME = 'testnet';
+const DEFAULT_NETWORK_NAME = 'testnet';
+const VALID_NETWORK_NAMES = [DEFAULT_NETWORK_NAME, 'hacktheorb'];
+
 const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
 
 const q = obj => JSON.stringify(obj, null, 2);
 
 const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
-  const [_trigger, cmd, address] = request.args;
+  let cmdArgs;
+  if (VALID_NETWORK_NAMES.includes(request.args[1])) {
+    cmdArgs = request.args.slice(2);
+  } else {
+    cmdArgs = request.args.slice(1);
+  }
+
+  const [cmd, address] = cmdArgs;
   switch (cmd) {
     case 'client':
     case 'delegate':
@@ -64,7 +73,15 @@ const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
   console.log('enacting', request);
   await validate(request, TRIGGER_COMMAND);
   return new Promise((resolve, reject) => {
-    const [_trigger, cmd, address] = request.args;
+    let NETWORK_NAME = DEFAULT_NETWORK_NAME;
+    let cmdArgs;
+    if (VALID_NETWORK_NAMES.includes(request.args[1])) {
+      NETWORK_NAME = request.args[1];
+      cmdArgs = request.args.slice(2);
+    } else {
+      cmdArgs = request.args.slice(1);
+    }
+    const [cmd, address] = cmdArgs;
     switch (cmd) {
       case 'client':
       case 'delegate':
