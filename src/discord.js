@@ -60,7 +60,8 @@ NOTE: 🤔 means that your request is still waiting manual approval.
         .then(
           async ({ message, priv }) => {
             await msg.react('✅');
-            let reply = `\`\`\`\n${priv}\`\`\``;
+            const body = `${msg.author} wants to \`${args.join(' ')}\`.`;
+            let reply = `${body}\n\`\`\`\n${priv}\`\`\``;
             if (message) {
               reply = `${message}\n${reply}`;
             }
