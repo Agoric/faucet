@@ -60,7 +60,7 @@ NOTE: 🤔 means that your request is still waiting manual approval.
         .then(
           async ({ message, priv }) => {
             await msg.react('✅');
-            const body = `${msg.author} wants to \`${args.join(' ')}\`.`;
+            const body = `${msg.author} did \`${args.join(' ')}\`.`;
             let reply = `${body}\n\`\`\`\n${priv}\`\`\``;
             if (message) {
               reply = `${message}\n${reply}`;
@@ -71,8 +71,11 @@ NOTE: 🤔 means that your request is still waiting manual approval.
             }
             await msg.channel.send(`${msg.author} ${message}`);
           },
-          async _e => {
+          async e => {
             await msg.react('☠️');
+            const body = `${msg.author} failed to \`${args.join(' ')}\`.`;
+            const reply = `${body}\n\`\`\`\n${e.message}\`\`\``;
+            await adminChannel.send(reply);
           },
         )
         .finally(async () => {
