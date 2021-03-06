@@ -55,60 +55,30 @@ NOTE: 🤔 means that your request is still waiting manual approval.
       }
 
       // TODO: Check the request before submitting to admins.
-      const thinking = await msg.react('🤔');
-
-      const body = `\
-@everyone ${msg.author} wants to \`${args.join(' ')}\`.`;
-      // React with :+1: or :-1:
-      const question = await adminChannel.send(body);
-      const collector = await question.createReactionCollector(
-        (_reaction, _user) => true,
-      );
-
-      collector.on('collect', async (reaction, _user) => {
-        if (reaction.emoji.name === '👎') {
-          collector.stop();
-          await thinking
+      const hourglass = await msg.react('⏳');
+      enact(request, TRIGGER_COMMAND)
+        .then(
+          async ({ message, priv }) => {
+            await msg.react('✅');
+            let reply = `\`\`\`\n${priv}\`\`\``;
+            if (message) {
+              reply = `${message}\n${reply}`;
+            }
+            await adminChannel.send(reply);
+            if (!message) {
+              return;
+            }
+            await msg.channel.send(`${msg.author} ${message}`);
+          },
+          async _e => {
+            await msg.react('☠️');
+          },
+        )
+        .finally(async () => {
+          await hourglass
             .remove()
-            .catch(e => console.error('Cannot remove thinking', e));
-          await msg.react(reaction.emoji);
-        } else if (reaction.emoji.name === '👍') {
-          collector.stop();
-          const hourglass = await msg.react('⏳');
-          await thinking
-            .remove()
-            .catch(e => console.error('Cannot remove thinking', e));
-          enact(request, TRIGGER_COMMAND)
-            .then(
-              async ({ message, priv }) => {
-                await msg.react('✅');
-                let reply = `\`\`\`\n${priv}\`\`\``;
-                if (message) {
-                  reply = `${message}\n${reply}`;
-                }
-                await question.reply(reply);
-                if (!message) {
-                  return;
-                }
-                await msg.channel.send(`${msg.author} ${message}`);
-                await msg.react(reaction.emoji);
-              },
-              async e => {
-                await msg.react('☠️');
-                await question.channel.send(`\
-${msg.author} Failed!
-\`\`\`
-${(e && e.priv) || ''}${(e && e.stack) || e}
-\`\`\``);
-              },
-            )
-            .finally(async () => {
-              await hourglass
-                .remove()
-                .catch(e => console.error('Cannot remove hourglass', e));
-            });
-        }
-      });
+            .catch(e => console.error('Cannot remove hourglass', e));
+        });
     };
 
     bot.on(
