@@ -51,7 +51,7 @@ ${TRIGGER_COMMAND} delegate <AGORIC-BECH32>
 \`\`\`
 `;
         help += `\
-Add a client node to the network (do this only if prompted by your client):
+Add a client node (non-validator) to the network.  Do this only if prompted by your ag-solo client; this DOES NOT give you any tokens:
 \`\`\`
 ${TRIGGER_COMMAND} client <AGORIC-BECH32>
 \`\`\`
@@ -69,58 +69,66 @@ ${TRIGGER_COMMAND} client <AGORIC-BECH32>
   return true;
 };
 
-const makeEnact = validate => async (request, TRIGGER_COMMAND) => {
-  console.log('enacting', request);
-  await validate(request, TRIGGER_COMMAND);
-  return new Promise((resolve, reject) => {
-    let NETWORK_NAME = DEFAULT_NETWORK_NAME;
-    let cmdArgs;
-    if (VALID_NETWORK_NAMES.includes(request.args[1])) {
-      NETWORK_NAME = request.args[1];
-      cmdArgs = request.args.slice(2);
-    } else {
-      cmdArgs = request.args.slice(1);
-    }
-    const [cmd, address] = cmdArgs;
-    switch (cmd) {
-      case 'client':
-      case 'delegate':
-      case 'add-egress':
-      case 'add-delegate':
-      case 'provision': {
-        const command = [
-          AG_SETUP_COSMOS,
-          'shell',
-          `${NETWORK_NAME}/faucet-helper.sh`,
-          ['delegate', 'provision', 'add-delegate'].includes(cmd)
-            ? 'add-delegate'
-            : 'add-egress',
-          request.sender.username,
-          address,
-        ];
-        console.log('spawn', command, request);
-        let buf = '';
-        const cp = spawn(command[0], command.slice(1));
-        cp.stdout.on('data', chunk => (buf += chunk.toString()));
-        cp.stderr.on('data', chunk => (buf += chunk.toString()));
-        cp.on('exit', code => {
-          if (code) {
-            const err = Error(
-              `Nonzero ${command.join(' ')} exit code: ${code}`,
-            );
-            err.priv = buf;
-            reject(err);
-          } else {
-            resolve({ priv: buf, message: '' });
+const makeEnact = validate => {
+  let baton = Promise.resolve();
+  return async (request, TRIGGER_COMMAND) => {
+    console.log('enacting', request);
+    await validate(request, TRIGGER_COMMAND);
+    const nextEnactment = () =>
+      new Promise((resolve, reject) => {
+        let NETWORK_NAME = DEFAULT_NETWORK_NAME;
+        let cmdArgs;
+        if (VALID_NETWORK_NAMES.includes(request.args[1])) {
+          NETWORK_NAME = request.args[1];
+          cmdArgs = request.args.slice(2);
+        } else {
+          cmdArgs = request.args.slice(1);
+        }
+        const [cmd, address] = cmdArgs;
+        switch (cmd) {
+          case 'client':
+          case 'delegate':
+          case 'add-egress':
+          case 'add-delegate':
+          case 'provision': {
+            const command = [
+              AG_SETUP_COSMOS,
+              'shell',
+              `${NETWORK_NAME}/faucet-helper.sh`,
+              ['delegate', 'provision', 'add-delegate'].includes(cmd)
+                ? 'add-delegate'
+                : 'add-egress',
+              request.sender.username,
+              address,
+            ];
+            console.log('spawn', command, request);
+            let buf = '';
+            const cp = spawn(command[0], command.slice(1));
+            cp.stdout.on('data', chunk => (buf += chunk.toString()));
+            cp.stderr.on('data', chunk => (buf += chunk.toString()));
+            cp.on('exit', code => {
+              if (code) {
+                const err = Error(
+                  `Nonzero ${command.join(' ')} exit code: ${code}`,
+                );
+                err.priv = buf;
+                reject(err);
+              } else {
+                resolve({ priv: buf, message: '' });
+              }
+            });
+            cp.on('error', reject);
+            break;
           }
-        });
-        cp.on('error', reject);
-        break;
-      }
-      default:
-        throw Error(`${cmd} not implemented`);
-    }
-  });
+          default:
+            throw Error(`${cmd} not implemented`);
+        }
+      });
+
+    // Don't actually run until the prior enactment is ready.
+    baton = baton.then(nextEnactment, nextEnactment);
+    return baton;
+  };
 };
 
 export default async _argv => {
