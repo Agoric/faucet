@@ -112,9 +112,17 @@ const makeEnact = validate => {
                   `Nonzero ${command.join(' ')} exit code: ${code}`,
                 );
                 err.priv = buf;
+                const match = buf.match(
+                  / has already tapped the faucet:\n(agoric1[^:]+)/,
+                );
+                if (match) {
+                  err.pub = `You have already tapped with address \`${match[1]}\``;
+                } else {
+                  err.pub = `Sorry, the faucet failed`;
+                }
                 reject(err);
               } else {
-                resolve({ priv: buf, message: '' });
+                resolve({ priv: buf, pub: '' });
               }
             });
             cp.on('error', reject);

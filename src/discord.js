@@ -58,18 +58,15 @@ NOTE: 🤔 means that your request is still waiting manual approval.
       const hourglass = await msg.react('⏳');
       enact(request, TRIGGER_COMMAND)
         .then(
-          async ({ message, priv }) => {
+          async ({ pub, priv }) => {
             await msg.react('✅');
             const body = `${msg.author} did \`${args.join(' ')}\`.`;
             let reply = `${body}\n\`\`\`\n${priv}\`\`\``;
-            if (message) {
-              reply = `${message}\n${reply}`;
+            if (pub) {
+              reply = `${pub}\n${reply}`;
+              await msg.reply(pub);
             }
             await adminChannel.send(reply);
-            if (!message) {
-              return;
-            }
-            await msg.channel.send(`${msg.author} ${message}`);
           },
           async e => {
             await msg.react('☠️');
