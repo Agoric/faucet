@@ -73,6 +73,9 @@ NOTE: 🤔 means that your request is still waiting manual approval.
             const body = `${msg.author} failed to \`${args.join(' ')}\`.`;
             const reply = `${body}\n\`\`\`\n${(e && e.priv) || ''}${e}\`\`\``;
             await adminChannel.send(reply);
+            if (e.pub) {
+              await msg.reply(e.pub);
+            }
           },
         )
         .finally(async () => {

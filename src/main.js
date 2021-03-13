@@ -107,13 +107,14 @@ const makeEnact = validate => {
             cp.stdout.on('data', chunk => (buf += chunk.toString()));
             cp.stderr.on('data', chunk => (buf += chunk.toString()));
             cp.on('exit', code => {
+              console.log(`Exiting with`, buf);
               if (code) {
                 const err = Error(
                   `Nonzero ${command.join(' ')} exit code: ${code}`,
                 );
                 err.priv = buf;
                 const match = buf.match(
-                  / has already tapped the faucet:\n(agoric1[^:]+)/,
+                  / has already tapped the faucet:\s*(agoric1[^:]+)/s,
                 );
                 if (match) {
                   err.pub = `You have already tapped with address \`${match[1]}\``;
