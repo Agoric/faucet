@@ -32,6 +32,7 @@ export const runDiscordBot = opts =>
       const username = msg.author.id;
       const request = {
         args,
+        channel: { id: msg.channel.id },
         sender: { username },
       };
       const help = await validate(request, TRIGGER_COMMAND).catch(async e => {

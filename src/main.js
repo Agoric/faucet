@@ -5,8 +5,13 @@ import { openSwingStore } from '@agoric/swing-store-simple';
 // import { runKeybaseBot } from './keybase';
 import { runDiscordBot } from './discord';
 
-const DEFAULT_NETWORK_NAME = 'testnet';
-const VALID_NETWORK_NAMES = [DEFAULT_NETWORK_NAME, 'hacktheorb'];
+const DEFAULT_NETWORK_NAME = 'devnet';
+const INCENTIVIZED_TESTNET_NETWORK_NAME = 'intest';
+const VALID_NETWORK_NAMES = [
+  DEFAULT_NETWORK_NAME,
+  INCENTIVIZED_TESTNET_NETWORK_NAME,
+];
+const TESTNET_FAUCET_CHANNEL_ID = '824414814230020156';
 
 const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
 
@@ -82,6 +87,9 @@ const makeEnact = validate => {
           NETWORK_NAME = request.args[1];
           cmdArgs = request.args.slice(2);
         } else {
+          if (request.channel.id === TESTNET_FAUCET_CHANNEL_ID) {
+            NETWORK_NAME = INCENTIVIZED_TESTNET_NETWORK_NAME;
+          }
           cmdArgs = request.args.slice(1);
         }
         const [cmd, address] = cmdArgs;
