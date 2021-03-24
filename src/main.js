@@ -7,10 +7,6 @@ import { runDiscordBot } from './discord';
 
 const DEFAULT_NETWORK_NAME = 'devnet';
 const INCENTIVIZED_TESTNET_NETWORK_NAME = 'intest';
-const VALID_NETWORK_NAMES = [
-  DEFAULT_NETWORK_NAME,
-  INCENTIVIZED_TESTNET_NETWORK_NAME,
-];
 const TESTNET_FAUCET_CHANNEL_ID = '824414814230020156';
 
 const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
@@ -18,12 +14,7 @@ const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
 const q = obj => JSON.stringify(obj, null, 2);
 
 const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
-  let cmdArgs;
-  if (VALID_NETWORK_NAMES.includes(request.args[1])) {
-    cmdArgs = request.args.slice(2);
-  } else {
-    cmdArgs = request.args.slice(1);
-  }
+  const cmdArgs = request.args.slice(1);
 
   const [cmd, address] = cmdArgs;
   switch (cmd) {
@@ -81,17 +72,11 @@ const makeEnact = validate => {
     await validate(request, TRIGGER_COMMAND);
     const nextEnactment = () =>
       new Promise((resolve, reject) => {
-        let NETWORK_NAME = DEFAULT_NETWORK_NAME;
-        let cmdArgs;
-        if (VALID_NETWORK_NAMES.includes(request.args[1])) {
-          NETWORK_NAME = request.args[1];
-          cmdArgs = request.args.slice(2);
-        } else {
-          if (request.channel.id === TESTNET_FAUCET_CHANNEL_ID) {
-            NETWORK_NAME = INCENTIVIZED_TESTNET_NETWORK_NAME;
-          }
-          cmdArgs = request.args.slice(1);
-        }
+        const networkName =
+          request.channel.id === TESTNET_FAUCET_CHANNEL_ID
+            ? INCENTIVIZED_TESTNET_NETWORK_NAME
+            : DEFAULT_NETWORK_NAME;
+        const cmdArgs = request.args.slice(1);
         const [cmd, address] = cmdArgs;
         switch (cmd) {
           case 'client':
@@ -102,7 +87,7 @@ const makeEnact = validate => {
             const command = [
               AG_SETUP_COSMOS,
               'shell',
-              `${NETWORK_NAME}/faucet-helper.sh`,
+              `${networkName}/faucet-helper.sh`,
               ['delegate', 'provision', 'add-delegate'].includes(cmd)
                 ? 'add-delegate'
                 : 'add-egress',
