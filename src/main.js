@@ -5,8 +5,13 @@ import { openSwingStore } from '@agoric/swing-store-simple';
 // import { runKeybaseBot } from './keybase';
 import { runDiscordBot } from './discord';
 
-const DEFAULT_NETWORK_NAME = 'devnet';
-const INCENTIVIZED_TESTNET_NETWORK_NAME = 'intest';
+const DEFAULT_CLIENT_NETWORK_NAME = 'stage';
+const DEFAULT_DELEGATE_NETWORK_NAME = 'devnet';
+const VALID_NETWORK_OVERRIDES = [
+  DEFAULT_CLIENT_NETWORK_NAME,
+  DEFAULT_DELEGATE_NETWORK_NAME,
+];
+const INCENTIVIZED_TESTNET_NETWORK_NAME = 'testnet';
 const TESTNET_FAUCET_CHANNEL_ID = '824414814230020156';
 
 const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
@@ -14,7 +19,12 @@ const AG_SETUP_COSMOS = `${process.env.HOME}/ag-setup-cosmos`;
 const q = obj => JSON.stringify(obj, null, 2);
 
 const makeValidate = canProvision => async (request, TRIGGER_COMMAND) => {
-  const cmdArgs = request.args.slice(1);
+  let cmdArgs;
+  if (VALID_NETWORK_OVERRIDES.includes(request.args[1])) {
+    cmdArgs = request.args.slice(2);
+  } else {
+    cmdArgs = request.args.slice(1);
+  }
 
   const [cmd, address] = cmdArgs;
   switch (cmd) {
@@ -72,11 +82,24 @@ const makeEnact = validate => {
     await validate(request, TRIGGER_COMMAND);
     const nextEnactment = () =>
       new Promise((resolve, reject) => {
-        const networkName =
-          request.channel.id === TESTNET_FAUCET_CHANNEL_ID
-            ? INCENTIVIZED_TESTNET_NETWORK_NAME
-            : DEFAULT_NETWORK_NAME;
-        const cmdArgs = request.args.slice(1);
+        let cmdArgs;
+        let networkName;
+        if (request.channel.id === TESTNET_FAUCET_CHANNEL_ID) {
+          // Force into the incentivised testnet.
+          networkName = INCENTIVIZED_TESTNET_NETWORK_NAME;
+          cmdArgs = request.args.slice(1);
+        } else if (VALID_NETWORK_OVERRIDES.includes(request.args[1])) {
+          // Allow overrides on #faucet.
+          networkName = request.args[1];
+          cmdArgs = request.args.slice(2);
+        } else {
+          // Default to client network or delegate network.
+          cmdArgs = request.args.slice(1);
+          networkName =
+            cmdArgs[0] === 'client'
+              ? DEFAULT_CLIENT_NETWORK_NAME
+              : DEFAULT_DELEGATE_NETWORK_NAME;
+        }
         const [cmd, address] = cmdArgs;
         switch (cmd) {
           case 'client':
